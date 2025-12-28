@@ -1,7 +1,10 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const connectDB = require('./config/db')
 
+
+connectDB()
 
 const app = express()
 app.use(cors())
@@ -14,5 +17,5 @@ app.get('/',(req,res)=>{
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT,()=>{
-  console.log(`http://localhost:3000${PORT}`)
+  console.log(`http://localhost:${PORT}`)
 })
