@@ -14,6 +14,7 @@ const authmiddleware = (req, res, next) => {
 
     const path = authheader.split(" ");
     const token = path[1];
+    console.log("Extracted token:", token);
 
     if (!token) {
       console.log("Invalid token format");
