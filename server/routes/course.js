@@ -132,4 +132,56 @@ router.post('/enroll', authMiddleware, roleMiddleware('student'), async (req, re
   }
 });
 
+
+// ============================================
+// GET ENROLLED COURSES ROUTE
+// ============================================
+// Only students can view their enrolled courses
+router.get('/enrolled', authMiddleware, roleMiddleware('student'), async (req, res) => {
+  try {
+    // Get student ID from authenticated user
+    const studentId = req.user.id;
+
+    console.log('Student', studentId, 'fetching enrolled courses');
+
+    // Step 1: Find all enrollments for this student
+    const enrollments = await Enrollment.find({ studentId });
+
+    console.log('Found', enrollments.length, 'enrollments');
+
+    // Step 2-4: For each enrollment, fetch the course details
+    const courses = [];
+
+    // Loop over each enrollment
+    for (let enrollment of enrollments) {
+      // Get the courseId from enrollment
+      const courseId = enrollment.courseId;
+
+      // Fetch the course using courseId
+      const course = await Course.findById(courseId);
+
+      // If course exists, add to courses array
+      if (course) {
+        courses.push({
+          id: course._id,
+          title: course.title,
+          description: course.description,
+        });
+      }
+    }
+
+    console.log('Returning', courses.length, 'courses');
+
+    // Step 5: Send courses as response
+    res.status(200).json({
+      message: 'Enrolled courses retrieved successfully',
+      courses: courses,
+    });
+  } catch (error) {
+    console.error('Error fetching enrolled courses:', error);
+    res.status(500).json({ message: 'Server error while fetching enrolled courses' });
+  }
+});
+
+
 module.exports = router;

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { getToken } from '../utils/auth';
+import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { getToken } from "../utils/auth";
 
 const CourseDetail = () => {
   // Get courseId from URL
@@ -10,7 +10,7 @@ const CourseDetail = () => {
   const [lectures, setLectures] = useState([]);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Ref to access video element
   const videoRef = useRef(null);
@@ -30,19 +30,19 @@ const CourseDetail = () => {
       const response = await fetch(
         `http://localhost:3000/api/lecture/course/${courseId}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const data = await response.json();
 
       // Check if request was successful
       if (!response.ok) {
-        setError(data.message || 'Failed to fetch lectures');
+        setError(data.message || "Failed to fetch lectures");
         return;
       }
 
@@ -54,8 +54,8 @@ const CourseDetail = () => {
         setSelectedLecture(data.lectures[0]);
       }
     } catch (err) {
-      console.error('Fetch lectures error:', err);
-      setError('Server error while fetching lectures');
+      console.error("Fetch lectures error:", err);
+      setError("Server error while fetching lectures");
     } finally {
       setLoading(false);
     }
@@ -76,11 +76,11 @@ const CourseDetail = () => {
       const token = getToken();
 
       // Send watch time to backend
-      await fetch('http://localhost:3000/api/watch-time/save', {
-        method: 'POST',
+      await fetch("http://localhost:3000/api/watch-time/save", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           lectureId: selectedLecture.id,
@@ -88,9 +88,9 @@ const CourseDetail = () => {
         }),
       });
 
-      console.log('Watch time saved:', currentTime);
+      console.log("Watch time saved:", currentTime);
     } catch (err) {
-      console.error('Save watch time error:', err);
+      console.error("Save watch time error:", err);
     }
   };
 
@@ -125,15 +125,11 @@ const CourseDetail = () => {
               {selectedLecture && (
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                   {/* Video player */}
-                  <div className="bg-black aspect-video flex items-center justify-center">
-                    <video
-                      ref={videoRef}
-                      controls
-                      className="w-full h-full"
-                      onPause={handleVideoPause}
-                    >
+                  <div key={selectedLecture.id}>
+                    {" "}
+                    {/* <- IMPORTANT FIX */}
+                    <video ref={videoRef} controls className="w-full h-full">
                       <source src={selectedLecture.videoUrl} type="video/mp4" />
-                      Your browser does not support the video tag.
                     </video>
                   </div>
 
@@ -165,8 +161,8 @@ const CourseDetail = () => {
                       onClick={() => setSelectedLecture(lecture)}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-100 transition ${
                         selectedLecture?.id === lecture.id
-                          ? 'bg-blue-100 border-l-4 border-blue-500'
-                          : ''
+                          ? "bg-blue-100 border-l-4 border-blue-500"
+                          : ""
                       }`}
                     >
                       <p className="text-sm font-medium text-gray-700">

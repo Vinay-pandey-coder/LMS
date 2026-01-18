@@ -1,130 +1,124 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getToken, logout } from '../utils/auth';
+// Login.jsx - Student login page with Redux authentication
 
-const Dashboard = () => {
-  // State for courses list
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../features/auth/authSlice';
+
+const Login = () => {
+  // State for form inputs
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Fetch enrolled courses when component mounts
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  // Hook to navigate after successful login
+  const navigate = useNavigate();
 
-  // Fetch courses from backend
-  const fetchCourses = async () => {
+  // Redux dispatch hook to dispatch actions
+  // Used to update Redux state when login succeeds
+  const dispatch = useDispatch();
+
+  // Handle login form submission
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      // Get token from localStorage
-      const token = getToken();
-
-      // Call backend API to get enrolled courses
-      const response = await fetch('http://localhost:3000/api/course/enrolled', {
-        method: 'GET',
+      // Send login request to backend
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      const data = await response.json(); 
+      // Parse response
+      const data = await response.json();
 
-      // Check if request was successful
+      // Check if login was successful
       if (!response.ok) {
-        setError(data.message || 'Failed to fetch courses');
+        setError(data.message || 'Login failed');
         return;
       }
 
-      // Set courses in state
-      setCourses(data.courses || []);
+      // Dispatch Redux action to update auth state
+      // This saves token to Redux store AND localStorage
+      dispatch(loginSuccess(data.token));
+
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err) {
-      console.error('Fetch courses error:', err);
-      setError('Server error while fetching courses');
+      console.error('Login error:', err);
+      setError('Server error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      logout();
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-blue-600 text-white py-6 shadow">
-        <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Student Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-medium transition"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          LMS Login
+        </h1>
 
-      {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h2>
-
-        {/* Loading state */}
-        {loading && (
-          <p className="text-gray-600 text-center py-8">Loading courses...</p>
-        )}
-
-        {/* Error state */}
+        {/* Error message display */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
+          </div> 
+        )}
+
+        {/* Login form */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          {/* Email input */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
           </div>
-        )}
 
-        {/* Courses grid */}
-        {!loading && courses.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition p-6"
-              >
-                {/* Course title */}
-                <h3 className="text-xl font-bold text-gray-800 mb-3">
-                  {course.title}
-                </h3>
-
-                {/* Course description */}
-                {course.description && (
-                  <p className="text-gray-600 text-sm mb-4">
-                    {course.description}
-                  </p>
-                )}
-
-                {/* Continue button */}
-                <Link
-                  to={`/course/${course.id}`}
-                  className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition"
-                >
-                  Continue Learning
-                </Link>
-              </div>
-            ))}
+          {/* Password input */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter your password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
           </div>
-        )}
 
-        {/* No courses message */}
-        {!loading && courses.length === 0 && !error && (
-          <p className="text-gray-600 text-center py-8">
-            You are not enrolled in any courses yet.
-          </p>
-        )}
-      </main>
+          {/* Login button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 text-white py-2 rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-400 transition"
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default Login;
