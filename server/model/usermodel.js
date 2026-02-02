@@ -1,4 +1,6 @@
+
 const mongoose = require('mongoose');
+
 // Define User Schema
 const userSchema = new mongoose.Schema({
   // User's full name
@@ -12,17 +14,43 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  // User's password (will be hashed before saving)
+  // User's password
   password: {
     type: String,
     required: true,
   },
-  // User's role (student or teacher)
+  // User's role (student, teacher, or admin)
   role: {
     type: String,
+    enum: ['student', 'teacher', 'admin'],
+    required: true,
     default: 'student',
   },
+  // Email verification status
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  // Authentication provider
+  authProvider: {
+    type: String,
+    enum: ['email', 'google'],
+    default: 'email',
+  },
+  // Google ID (optional)
+  googleId: {
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
+  },
+  // Creation timestamp
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
+
 // Create User model from schema
 const User = mongoose.model('User', userSchema);
 module.exports = User;

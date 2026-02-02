@@ -224,6 +224,41 @@ router.post(
 );
 
 // ============================================
+// ROUTE: Get single submission by ID (Teacher)
+// ============================================
+// GET /api/assignment/submission/:submissionId
+// Teachers can view a specific submission details
+// Response: { submission }
+router.get(
+  '/submission/:submissionId',
+  authMiddleware,
+  roleMiddleware('teacher'),
+  async (req, res) => {
+    try {
+      // Get submission ID from URL
+      const submissionId = req.params.submissionId;
+
+      // Find submission by ID and populate student info
+      const submission = await AssignmentSubmission.findById(submissionId)
+        .populate('studentId', 'name email');
+
+      // If not found, return 404
+      if (!submission) {
+        return res.status(404).json({ message: 'Submission not found' });
+      }
+
+      // Return submission
+      return res.status(200).json({
+        submission: submission,
+      });
+    } catch (error) {
+      console.error('Error fetching submission:', error);
+      return res.status(500).json({ message: 'Error fetching submission' });
+    }
+  }
+);
+
+// ============================================
 // BONUS ROUTE: Get student submissions for assignment (Teacher)
 // ============================================
 // GET /api/assignment/:assignmentId/submissions
@@ -293,6 +328,144 @@ router.get(
     } catch (error) {
       console.error('Error fetching submission:', error);
       return res.status(500).json({ message: 'Error fetching submission' });
+    }
+  }
+);
+
+// ============================================
+// ROUTE: Grade assignment submission (Teacher Only)
+// ============================================
+// PUT /api/assignment/submission/:submissionId/grade
+// Body: { marks, feedback }
+// Response: { message, submission }
+// Teachers use this to give marks and feedback to a submission
+router.put(
+  '/submission/:submissionId/grade',
+  authMiddleware,
+  roleMiddleware('teacher'),
+  async (req, res) => {
+    try {
+      // Get submission ID from URL
+      const submissionId = req.params.submissionId;
+
+      // Get marks and feedback from request body
+      const { marks, feedback } = req.body;
+
+      // Validate that marks is provided
+      if (marks === undefined || marks === null) {
+        return res.status(400).json({ message: 'Marks are required' });
+      }
+
+      // Validate that marks is a number
+      if (typeof marks !== 'number') {
+        return res
+          .status(400)
+          .json({ message: 'Marks must be a number' });
+      }
+
+      // Validate that marks is not negative
+      if (marks < 0) {
+        return res
+          .status(400)
+          .json({ message: 'Marks cannot be negative' });
+      }
+
+      // Find the submission by ID
+      const submission = await AssignmentSubmission.findById(submissionId);
+
+      // If not found, return 404
+      if (!submission) {
+        return res.status(404).json({ message: 'Submission not found' });
+      }
+
+      // Update submission with marks
+      submission.marks = marks;
+
+      // Update submission with feedback (if provided)
+      if (feedback) {
+        submission.feedback = feedback;
+      }
+
+      // Update status to "checked" (graded)
+      submission.status = 'checked';
+
+      // Set grading timestamp to current date/time
+      submission.gradedAt = new Date();
+
+      // Also set evaluatedAt for backwards compatibility
+      submission.evaluatedAt = new Date();
+
+      // Save updated submission to database
+      await submission.save();
+
+      // Return success response with updated data
+      return res.status(200).json({
+        message: 'Assignment graded successfully',
+        submission: {
+          _id: submission._id,
+          marks: submission.marks,
+          feedback: submission.feedback,
+          status: submission.status,
+          gradedAt: submission.gradedAt,
+        },
+      });
+    } catch (error) {
+      // If error, log and return error message
+      console.error('Error grading submission:', error);
+      return res.status(500).json({ message: 'Error grading submission' });
+    }
+  }
+);
+
+// ============================================
+// ROUTE: Get student's assignment result (Student Only)
+// ============================================
+// GET /api/assignment/:assignmentId/my-submission
+// Response: { marks, feedback, submittedAt, gradedAt, status }
+// Students use this to see their submission result and feedback
+router.get(
+  '/:assignmentId/my-submission',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      // Get assignment ID from URL parameters
+      const assignmentId = req.params.assignmentId;
+
+      // Get student ID from authMiddleware (req.user.id)
+      const studentId = req.user.id;
+
+      // Find the submission matching this assignment and student
+      const submission = await AssignmentSubmission.findOne({
+        assignmentId: assignmentId,
+        studentId: studentId,
+      });
+
+      // If no submission found, return 404
+      if (!submission) {
+        return res.status(404).json({
+          message: 'Submission not found',
+          submission: null,
+        });
+      }
+
+      // Return submission result with marks and feedback
+      return res.status(200).json({
+        submission: {
+          _id: submission._id,
+          marks: submission.marks,
+          feedback: submission.feedback,
+          submittedAt: submission.submittedAt,
+          gradedAt: submission.gradedAt,
+          status: submission.status,
+          answerText: submission.answerText,
+        },
+      });
+    } catch (error) {
+      // If error, log and return error message
+      console.error('Error fetching student result:', error);
+      return res.status(500).json({
+        message: 'Error fetching submission result',
+      });
     }
   }
 );

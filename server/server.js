@@ -12,7 +12,11 @@ const lectureRoutes = require('./routes/lecture');
 const progressRoutes = require('./routes/progress');
 const watchTimeRoutes = require('./routes/watchTime');
 const testRoutes = require('./routes/test');
-const assignmentRoutes = require('./routes/assignment'); 
+const assignmentRoutes = require('./routes/assignment');
+const certificateRoutes = require('./routes/certificate');
+const dashboardRoutes = require('./routes/dashboard');
+const enrollmentRoutes = require('./routes/enrollment');
+const adminRoutes = require('./routes/admin'); 
 
 
 const app = express();
@@ -48,8 +52,16 @@ app.use('/api/test', testRoutes);
 
 app.use('/api/assignment', assignmentRoutes);
 
+app.use('/api/certificate', certificateRoutes);
+
+app.use('/api/dashboard', dashboardRoutes);
+
+app.use('/api/enrollment', enrollmentRoutes);
+
+app.use('/api/admin', adminRoutes);
+
 // Server start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

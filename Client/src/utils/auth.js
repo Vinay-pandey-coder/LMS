@@ -1,18 +1,15 @@
-// Save token to localStorage
-const saveToken = (token) => {
-  localStorage.setItem('authToken', token);
-};
 
 // Get token from localStorage
 const getToken = () => {
-  return localStorage.getItem('authToken');
+  return localStorage.getItem('token');
 };
 
 // Clear token and logout
 const logout = () => {
-  localStorage.removeItem('authToken');
-  // Redirect to login
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('role');
   window.location.href = '/';
 };
 
-export { saveToken, getToken, logout };
+export { getToken, logout };

@@ -58,15 +58,26 @@ router.get('/all', authMiddleware, roleMiddleware('student'), async (req, res) =
   try {
     console.log('Student', req.user.id, 'fetching all courses');
 
-    // Find all courses from database
-    const courses = await Course.find();
+    // Find all courses from database and populate teacher info
+    const courses = await Course.find().populate('teacherId', 'name');
 
     console.log('Found', courses.length, 'courses');
+
+    // Transform response to include teacher name
+    const transformedCourses = courses.map(course => ({
+      _id: course._id,
+      id: course._id,
+      title: course.title,
+      description: course.description,
+      teacherId: course.teacherId?._id,
+      teacherName: course.teacherId?.name || 'Unknown Teacher',
+      createdAt: course.createdAt,
+    }));
 
     // Send list of courses
     res.status(200).json({
       message: 'Courses retrieved successfully',
-      courses: courses,
+      courses: transformedCourses,
     });
   } catch (error) {
     console.error('Error fetching courses:', error);
@@ -132,6 +143,32 @@ router.post('/enroll', authMiddleware, roleMiddleware('student'), async (req, re
   }
 });
 
+// ============================================
+// GET TEACHER COURSES ROUTE
+// ============================================
+// Only teachers can view their created courses
+router.get('/teacher', authMiddleware, roleMiddleware('teacher'), async (req, res) => {
+  try {
+    // Get teacher ID from authenticated user
+    const teacherId = req.user.id;
+
+    console.log('Teacher', teacherId, 'fetching their courses');
+
+    // Find all courses created by this teacher
+    const courses = await Course.find({ teacherId });
+
+    console.log('Found', courses.length, 'courses for teacher');
+
+    // Send courses as response
+    res.status(200).json({
+      message: 'Teacher courses retrieved successfully',
+      data: courses,
+    });
+  } catch (error) {
+    console.error('Error fetching teacher courses:', error);
+    res.status(500).json({ message: 'Server error while fetching teacher courses' });
+  }
+});
 
 // ============================================
 // GET ENROLLED COURSES ROUTE
@@ -182,6 +219,5 @@ router.get('/enrolled', authMiddleware, roleMiddleware('student'), async (req, r
     res.status(500).json({ message: 'Server error while fetching enrolled courses' });
   }
 });
-
 
 module.exports = router;

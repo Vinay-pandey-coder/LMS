@@ -1,59 +1,79 @@
-// authSlice.js - Authentication State Management
-// Uses Redux Toolkit's createSlice for simple reducer creation
-// Manages token and authentication state
-
 import { createSlice } from '@reduxjs/toolkit';
 
-// Get token from localStorage if it exists (for persistence)
-// This is called when app first loads
-const tokenFromStorage = localStorage.getItem('authToken');
+const tokenFromStorage = localStorage.getItem('token');
+const userFromStorage = localStorage.getItem('user');
+const roleFromStorage = localStorage.getItem('role');
 
-// Create auth slice with initial state and reducers
 const authSlice = createSlice({
-  // Slice name - becomes the state key (state.auth)
   name: 'auth',
 
-  // Initial state when app loads
   initialState: {
-    // token - the JWT token from backend (or null)
     token: tokenFromStorage || null,
-
-    // isAuthenticated - true if token exists, false otherwise
+    user: userFromStorage ? JSON.parse(userFromStorage) : null,
+    role: roleFromStorage || null,
     isAuthenticated: !!tokenFromStorage,
+    loading: false,
+    error: null,
   },
 
-  // Reducers - functions that update state
-  // These are dispatched by components
   reducers: {
-    // loginSuccess - called when user successfully logs in
-    // Payload should be the token from API response
-    loginSuccess: (state, action) => {
-      // Save token to Redux state
+    setToken: (state, action) => {
       state.token = action.payload;
-
-      // Update isAuthenticated flag
-      state.isAuthenticated = true;
-
-      // Also save token to localStorage for persistence across refreshes
-      localStorage.setItem('authToken', action.payload);
+      state.isAuthenticated = !!action.payload;
+      if (action.payload) {
+        localStorage.setItem('token', action.payload);
+      } else {
+        localStorage.removeItem('token');
+      }
     },
 
-    // logout - called when user clicks logout button
+    setUser: (state, action) => {
+      state.user = action.payload;
+      if (action.payload) {
+        localStorage.setItem('user', JSON.stringify(action.payload));
+      } else {
+        localStorage.removeItem('user');
+      }
+    },
+
+    setRole: (state, action) => {
+      state.role = action.payload;
+      if (action.payload) {
+        localStorage.setItem('role', action.payload);
+      } else {
+        localStorage.removeItem('role');
+      }
+    },
+
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+
     logout: (state) => {
-      // Clear token from Redux state
       state.token = null;
-
-      // Update isAuthenticated flag
+      state.user = null;
+      state.role = null;
       state.isAuthenticated = false;
+      state.error = null;
 
-      // Remove token from localStorage
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('role');
     },
   },
 });
 
-// Export actions for components to dispatch
-export const { loginSuccess, logout } = authSlice.actions;
+export const {
+  setToken,
+  setUser,
+  setRole,
+  setLoading,
+  setError,
+  logout,
+} = authSlice.actions;
 
-// Export reducer to use in store
 export default authSlice.reducer;

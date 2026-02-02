@@ -8,8 +8,51 @@ const router = express.Router();
 // ============================================
 // ADD LECTURE (TEACHER ONLY)
 // ============================================
-// POST /add
+// POST /create or POST /add
 // Only teachers can add lectures
+router.post('/create', authMiddleware, roleMiddleware('teacher'), async (req, res) => {
+  try {
+    // Get data from request body
+    const { courseId, title, videoUrl, order } = req.body;
+
+    // Check if all required fields are provided
+    if (!courseId || !title || !videoUrl) {
+      return res.status(400).json({
+        message: 'Please provide courseId, title, and videoUrl',
+      });
+    }
+
+    // Create new lecture
+    const newLecture = new Lecture({
+      courseId,
+      title,
+      videoUrl,
+      order: order || 1, // Default order is 1 if not provided
+    });
+
+    // Save lecture to database
+    await newLecture.save();
+
+    console.log('New lecture added:', newLecture._id);
+
+    // Send success response
+    res.status(201).json({
+      message: 'Lecture added successfully',
+      lecture: {
+        id: newLecture._id,
+        courseId: newLecture.courseId,
+        title: newLecture.title,
+        videoUrl: newLecture.videoUrl,
+        order: newLecture.order,
+      },
+    });
+  } catch (error) {
+    console.error('Add lecture error:', error.message);
+    res.status(500).json({ message: 'Server error while adding lecture' });
+  }
+});
+
+// Also support /add for backwards compatibility
 router.post('/add', authMiddleware, roleMiddleware('teacher'), async (req, res) => {
   try {
     // Get data from request body
@@ -53,15 +96,15 @@ router.post('/add', authMiddleware, roleMiddleware('teacher'), async (req, res) 
 });
 
 // ============================================
-// GET LECTURES BY COURSE (STUDENT ONLY)
+// GET LECTURES BY COURSE (STUDENTS & TEACHERS)
 // ============================================
 // GET /course/:courseId
-// Only students can view lectures
+// Students: view their enrolled course lectures
+// Teachers: view their own course lectures (read-only)
 // Returns all lectures for a course, sorted by order
 router.get(
   '/course/:courseId',
   authMiddleware,
-  roleMiddleware('student'),
   async (req, res) => {
     try {
       // Get courseId from URL parameters

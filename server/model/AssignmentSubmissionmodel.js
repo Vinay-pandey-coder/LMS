@@ -36,6 +36,14 @@ const assignmentSubmissionSchema = new mongoose.Schema({
     default: null,
   },
 
+  // Feedback/Comments from teacher
+  // Optional field where teacher can write feedback
+  // Initially null, filled when teacher grades
+  feedback: {
+    type: String,
+    default: null,
+  },
+
   // Status of submission
   // "submitted" = waiting for teacher evaluation
   // "checked" = teacher has evaluated and given marks
@@ -53,6 +61,12 @@ const assignmentSubmissionSchema = new mongoose.Schema({
 
   // When the teacher evaluated (if evaluated)
   evaluatedAt: {
+    type: Date,
+    default: null,
+  },
+
+  // When the teacher graded (same as evaluatedAt, but more specific)
+  gradedAt: {
     type: Date,
     default: null,
   },
