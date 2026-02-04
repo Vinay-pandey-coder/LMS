@@ -1,74 +1,91 @@
-// TeacherNavbar.jsx - Navigation bar for teachers
-// Shows teacher-specific links: Dashboard, My Courses, Create Course, Logout
-// Uses React Router v6 <Link> for proper SPA navigation
-
+// TeacherNavbar.jsx
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 
 const TeacherNavbar = () => {
-  // Hook for logout redirect (only used for logout, not regular navigation)
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  // Redux dispatch hook for logout
   const dispatch = useDispatch();
 
-  // Handle logout - clear auth state and redirect to login
   const handleLogout = () => {
-    // Step 1: Dispatch Redux logout action (clears token from Redux + localStorage)
     dispatch(logout());
-
-    // Step 2: Clear userRole from localStorage
     localStorage.removeItem('userRole');
-
-    // Step 3: Redirect to login page (logout is special - not a regular route)
     navigate('/');
   };
 
   return (
     <nav className="bg-purple-600 text-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        {/* Navbar container - flex layout for alignment */}
-        <div className="flex items-center justify-between">
-          {/* Left side: Brand/Logo */}
-          <div className="text-2xl font-bold">
-            LMS Teacher
-          </div>
+      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <div className="text-2xl font-bold">LMS Teacher</div>
 
-          {/* Right side: Navigation links */}
-          <div className="flex gap-6 items-center">
-            {/* Dashboard link - uses React Router <Link> for proper navigation */}
-            <Link
-              to="/app/teacher/dashboard"
-              className="hover:bg-purple-700 px-3 py-2 rounded-lg transition"
+        {/* Hamburger button for small screens */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="focus:outline-none"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              Dashboard
-            </Link>
+              {menuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
 
-            {/* My Courses link - uses React Router <Link> */}
-            <Link
-              to="/app/teacher/courses"
-              className="hover:bg-purple-700 px-3 py-2 rounded-lg transition"
-            >
-              My Courses
-            </Link>
-
-            {/* Create Course link - uses React Router <Link> */}
-            <Link
-              to="/app/teacher/course/create"
-              className="hover:bg-purple-700 px-3 py-2 rounded-lg transition"
-            >
-              Create Course
-            </Link>
-
-            {/* Logout button - onClick handler (not a regular route) */}
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-medium transition"
-            >
-              Logout
-            </button>
-          </div>
+        {/* Menu links */}
+        <div
+          className={`flex-col md:flex md:flex-row md:items-center gap-4 md:gap-6 absolute md:static top-16 left-0 w-full md:w-auto bg-purple-600 md:bg-transparent transition-all ${
+            menuOpen ? 'flex' : 'hidden'
+          }`}
+        >
+          <Link
+            to="/app/teacher/dashboard"
+            className="px-3 py-2 rounded-lg hover:bg-purple-700 transition"
+            onClick={() => setMenuOpen(false)}
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/app/teacher/courses"
+            className="px-3 py-2 rounded-lg hover:bg-purple-700 transition"
+            onClick={() => setMenuOpen(false)}
+          >
+            My Courses
+          </Link>
+          <Link
+            to="/app/teacher/course/create"
+            className="px-3 py-2 rounded-lg hover:bg-purple-700 transition"
+            onClick={() => setMenuOpen(false)}
+          >
+            Create Course
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-medium transition"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>
