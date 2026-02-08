@@ -79,14 +79,14 @@ const CreateQuiz = () => {
       // 2. Check roleMiddleware('teacher') (verify user is teacher)
       // 3. Create quiz with createdBy = req.user.id
       // 4. Return testId (quiz ID)
-      const response = await fetch('http://localhost:3000/api/test/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(quizData),
-      });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/test/create`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,
+         },
+         body: JSON.stringify(quizData),
+       });
 
       // Parse response
       const data = await response.json();

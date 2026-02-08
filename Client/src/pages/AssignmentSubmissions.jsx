@@ -38,7 +38,7 @@ export default function AssignmentSubmissions() {
       try {
         // Call backend to get all submissions for this assignment
         const response = await fetch(
-          `http://localhost:3000/api/assignment/${assignmentId}/submissions`,
+           `${import.meta.env.VITE_API_URL}/assignment/${assignmentId}/submissions`,
           {
             method: 'GET',
             headers: {

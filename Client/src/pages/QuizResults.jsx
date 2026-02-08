@@ -1,3 +1,4 @@
+
 // QuizResults.jsx - Display student quiz results for teachers
 // Only teachers can view results for a specific quiz
 // Shows a table with student names, scores, and submission dates
@@ -51,7 +52,7 @@ const QuizResults = () => {
         // 3. Find all TestResult documents for this testId
         // 4. Populate student info and format response
         const response = await fetch(
-          `http://localhost:3000/api/test/${testId}/results`,
+          `${import.meta.env.VITE_API_URL}/test/${testId}/results`,
           {
             method: 'GET',
             headers: {

@@ -26,7 +26,7 @@ export default function TeacherStudents() {
       }
 
       // Step 1: Fetch courses created by this teacher
-      const coursesResponse = await fetch('http://localhost:3000/api/course/teacher', {
+      const coursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/course/teacher`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export default function TeacherStudents() {
         try {
           // Fetch enrollments for this course
           const enrollmentResponse = await fetch(
-            `http://localhost:3000/api/enrollment/course/${course._id}`,
+            `${import.meta.env.VITE_API_URL}/enrollment/course/${course._id}`,
             {
               method: 'GET',
               headers: {

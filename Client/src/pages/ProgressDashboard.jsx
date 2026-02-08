@@ -44,7 +44,7 @@ export default function ProgressDashboard() {
       try {
         // Call backend to get progress summary
         const response = await fetch(
-          `http://localhost:3000/api/progress/summary/${courseId}`,
+          `${import.meta.env.VITE_API_URL}/progress/summary/${courseId}`,
           {
             method: 'GET',
             headers: {
@@ -98,7 +98,7 @@ export default function ProgressDashboard() {
 
       // Call backend API to generate certificate
       const response = await fetch(
-        `http://localhost:3000/api/certificate/course/${courseId}`,
+        `${import.meta.env.VITE_API_URL}/certificate/course/${courseId}`,
         {
           method: 'GET',
           headers: {

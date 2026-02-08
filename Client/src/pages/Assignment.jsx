@@ -1,4 +1,3 @@
-
 // Assignment.jsx - Assignment List & Submission Page
 // Students can view assignments and submit answers
 // Shows list of assignments for the course
@@ -57,7 +56,7 @@ export default function Assignment() {
       try {
         // Call backend to get assignments for this course
         const response = await fetch(
-          `http://localhost:3000/api/assignment/course/${courseId}`,
+          `${import.meta.env.VITE_API_URL}/assignment/course/${courseId}`,
           {
             method: "GET",
             headers: {
@@ -107,7 +106,7 @@ export default function Assignment() {
     setSubmissionLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/assignment/${assignment._id}/my-submission`,
+        `${import.meta.env.VITE_API_URL}/assignment/${assignment._id}/my-submission`,
         {
           method: "GET",
           headers: {

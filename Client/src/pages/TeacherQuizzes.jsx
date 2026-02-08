@@ -33,7 +33,7 @@ const TeacherQuizzes = () => {
       const token = getToken();
 
       const response = await fetch(
-        `http://localhost:3000/api/test/course/${courseId}`,
+        `${import.meta.env.VITE_API_URL}/test/course/${courseId}`,
         {
           method: 'GET',
           headers: {
@@ -68,7 +68,7 @@ const TeacherQuizzes = () => {
       }
 
       // Fetch courses created by this teacher
-      const coursesResponse = await fetch('http://localhost:3000/api/course/teacher', {
+      const coursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/course/teacher`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ const TeacherQuizzes = () => {
       for (const course of teacherCourses) {
         try {
           const response = await fetch(
-            `http://localhost:3000/api/test/course/${course._id}`,
+            `${import.meta.env.VITE_API_URL}/test/course/${course._id}`,
             {
               method: 'GET',
               headers: {

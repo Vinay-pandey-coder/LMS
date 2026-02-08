@@ -29,7 +29,7 @@ const TeacherAssignments = () => {
   const fetchAssignments = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/assignment/course/${courseId}`,
+        `${import.meta.env.VITE_API_URL}/assignment/course/${courseId}`,
         {
           method: 'GET',
           headers: {

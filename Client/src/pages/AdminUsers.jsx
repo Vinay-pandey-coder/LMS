@@ -28,7 +28,7 @@ export default function AdminUsers() {
         }
 
         const response = await fetch(
-          'http://localhost:3000/api/admin/users',
+          `${import.meta.env.VITE_API_URL}/admin/users`,
           {
             method: 'GET',
             headers: {

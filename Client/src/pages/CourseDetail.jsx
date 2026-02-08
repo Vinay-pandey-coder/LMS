@@ -46,16 +46,16 @@ const [assignments, setAssignments] = useState([]);
       const token = getToken();
 
       // Call backend API to get last watch time
-      const response = await fetch(
-        `http://localhost:3000/api/watch-time/lecture/${lectureId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+       const response = await fetch(
+         `${import.meta.env.VITE_API_URL}/watch-time/lecture/${lectureId}`,
+         {
+           method: 'GET',
+           headers: {
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${token}`,
+           },
+         }
+       );
 
       // Check if request was successful
       if (!response.ok) {
@@ -126,7 +126,7 @@ const [assignments, setAssignments] = useState([]);
 
       // Call backend API to get lectures
       const response = await fetch(
-        `http://localhost:3000/api/lecture/course/${courseId}`,
+        `${import.meta.env.VITE_API_URL}/lecture/course/${courseId}`,
         {
           method: 'GET',
           headers: {
@@ -164,13 +164,13 @@ const [assignments, setAssignments] = useState([]);
     const token = getToken();
 
     const res = await fetch(
-      `http://localhost:3000/api/test/course/${courseId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+       `${import.meta.env.VITE_API_URL}/test/course/${courseId}`,
+       {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
 
     const data = await res.json();
     if (res.ok) {
@@ -186,13 +186,13 @@ const fetchAssignments = async () => {
     const token = getToken();
 
     const res = await fetch(
-      `http://localhost:3000/api/assignment/course/${courseId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+       `${import.meta.env.VITE_API_URL}/assignment/course/${courseId}`,
+       {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
 
     const data = await res.json();
     if (res.ok) {
@@ -231,7 +231,7 @@ const fetchAssignments = async () => {
       const token = getToken();
 
       // Send watch time to backend (STUDENTS ONLY)
-      await fetch('http://localhost:3000/api/watch-time/save', {
+      await fetch(`${import.meta.env.VITE_API_URL}/watch-time/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

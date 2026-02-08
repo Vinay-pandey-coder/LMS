@@ -1,3 +1,4 @@
+
 // Quiz.jsx - Quiz/Test Page
 // Allows students to take a quiz and submit answers
 // Shows questions, collects answers, and displays score
@@ -40,7 +41,7 @@ export default function Quiz() {
       try {
         // Call backend to get quiz questions
         const response = await fetch(
-          `http://localhost:3000/api/test/${testId}`,
+          `${import.meta.env.VITE_API_URL}/test/${testId}`,
           {
             method: 'GET',
             headers: {
@@ -106,7 +107,7 @@ export default function Quiz() {
       }));
 
       // Send answers to backend
-      const response = await fetch('http://localhost:3000/api/test/submit', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/test/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

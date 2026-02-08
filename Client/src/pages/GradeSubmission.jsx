@@ -42,7 +42,7 @@ export default function GradeSubmission() {
       try {
         // Call backend to get submission details
         const response = await fetch(
-          `http://localhost:3000/api/assignment/submission/${submissionId}`,
+          `${import.meta.env.VITE_API_URL}/assignment/submission/${submissionId}`,
           {
             method: 'GET',
             headers: {
@@ -114,7 +114,7 @@ export default function GradeSubmission() {
     try {
       // Send grading to backend
       const response = await fetch(
-        `http://localhost:3000/api/assignment/submission/${submissionId}/grade`,
+        `${import.meta.env.VITE_API_URL}/assignment/submission/${submissionId}/grade`,
         {
           method: 'PUT',
           headers: {

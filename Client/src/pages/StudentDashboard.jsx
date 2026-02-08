@@ -1,3 +1,4 @@
+
 // StudentDashboard.jsx - Student Dashboard Summary
 // Shows student's overview: enrolled courses, completed courses, quiz scores, pending assignments
 // Displays key statistics for the student's learning journey

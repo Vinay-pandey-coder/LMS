@@ -48,18 +48,18 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-        }),
-      });
+       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           name: formData.name,
+           email: formData.email,
+           password: formData.password,
+           role: formData.role,
+         }),
+       });
 
       const data = await response.json();
 

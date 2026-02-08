@@ -1,4 +1,3 @@
-
 // TeacherCourses.jsx - Display all courses created by the teacher
 // Teachers can view, edit, or delete their courses from this page
 
