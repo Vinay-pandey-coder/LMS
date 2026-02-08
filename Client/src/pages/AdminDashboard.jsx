@@ -31,7 +31,7 @@ export default function AdminDashboard() {
 
         // Call backend to get admin stats
         const response = await fetch(
-          'http://localhost:3000/api/admin/stats',
+           `${import.meta.env.VITE_API_URL}/admin/stats`,
           {
             method: 'GET',
             headers: {

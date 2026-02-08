@@ -3,7 +3,7 @@
  * All API calls should use these functions to ensure token is always included
  */
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Get token from localStorage
