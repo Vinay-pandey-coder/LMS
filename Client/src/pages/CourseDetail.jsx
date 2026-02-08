@@ -231,7 +231,7 @@ const fetchAssignments = async () => {
       const token = getToken();
 
       // Send watch time to backend (STUDENTS ONLY)
-      await fetch(`${import.meta.env.VITE_API_URL}/watch-time/save`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/watch-time/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
