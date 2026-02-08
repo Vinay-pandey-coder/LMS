@@ -68,7 +68,7 @@ const TeacherQuizzes = () => {
       }
 
       // Fetch courses created by this teacher
-      const coursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/course/teacher`, {
+      const coursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/course/teacher`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

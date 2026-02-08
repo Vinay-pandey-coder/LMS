@@ -80,7 +80,7 @@ const CreateCourse = () => {
       // 1. Check authMiddleware (verify token)
       // 2. Check roleMiddleware('teacher') (verify user is teacher)
       // 3. Create course with teacherId = req.user.id
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/course/create`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/course/create`, {
          method: 'POST',
          headers: {
            'Content-Type': 'application/json',
